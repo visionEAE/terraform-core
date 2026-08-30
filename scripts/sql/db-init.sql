@@ -16,6 +16,11 @@ CREATE SCHEMA IF NOT EXISTS audit;
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 
+-- pgcrypto lives in its own schema so nothing lands in public; auth-service's production seed
+-- hashes the demo credentials with extensions.crypt() at migration time.
+CREATE SCHEMA IF NOT EXISTS extensions;
+CREATE EXTENSION IF NOT EXISTS pgcrypto SCHEMA extensions;
+
 GRANT auth_user    TO postgres;
 GRANT core_user    TO postgres;
 GRANT lms_user     TO postgres;
@@ -59,6 +64,8 @@ CREATE TABLE IF NOT EXISTS audit.audit_record (
 
 CREATE INDEX IF NOT EXISTS idx_audit_record_request_id ON audit.audit_record (request_id);
 CREATE INDEX IF NOT EXISTS idx_audit_record_subject    ON audit.audit_record (subject_type, subject_id, occurred_at DESC);
+
+GRANT USAGE ON SCHEMA extensions TO auth_user;
 
 GRANT USAGE ON SCHEMA audit TO auth_user, core_user, lms_user, support_user, network_user;
 GRANT INSERT, SELECT ON audit.audit_record TO auth_user, core_user, lms_user, support_user, network_user;

@@ -52,7 +52,12 @@ module "auth_sa" {
   project_id   = local.project_id
   account_id   = "${local.name_prefix}-run-auth"
   display_name = "s360 auth-service runtime"
-  secret_ids   = [local.secrets["auth-db-password"], local.secrets["jwt-private-pem"]]
+  secret_ids = [
+    local.secrets["auth-db-password"],
+    local.secrets["jwt-private-pem"],
+    local.secrets["seed-student-password"],
+    local.secrets["seed-staff-password"],
+  ]
 }
 
 module "gateway_sa" {
@@ -148,7 +153,9 @@ module "auth_service" {
   })
 
   secret_env = {
-    AUTH_DB_PASSWORD = local.secrets["auth-db-password"]
+    AUTH_DB_PASSWORD      = local.secrets["auth-db-password"]
+    SEED_STUDENT_PASSWORD = local.secrets["seed-student-password"]
+    SEED_STAFF_PASSWORD   = local.secrets["seed-staff-password"]
   }
 
   secret_volumes = {
