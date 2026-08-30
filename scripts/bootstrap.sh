@@ -18,7 +18,7 @@ terraform init -input=false
 terraform workspace select "${WORKSPACE}" 2>/dev/null || terraform workspace new "${WORKSPACE}"
 
 echo "→ phase 1: network, database, identities"
-terraform apply -input=false \
+terraform apply -input=false -auto-approve \
   -target=module.network \
   -target=module.cloudsql \
   -target=module.auth_sa -target=module.gateway_sa -target=module.core_sa \
