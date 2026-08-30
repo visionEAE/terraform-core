@@ -4,7 +4,7 @@ variable "state_bucket" {
     source accepts one while the backend block cannot; the default must match backend.tf.
   EOT
   type        = string
-  default     = "s360-tfstate-CHANGE-ME-PROJECT-ID"
+  default     = "s360-tfstate-project-42179253-bad9-49f0-835"
 }
 
 # Images are read ONLY at service creation — the cloud-run modules ignore_changes on the image

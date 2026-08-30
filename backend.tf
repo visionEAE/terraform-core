@@ -3,7 +3,7 @@
 # terraform-backend/locals.tf.
 terraform {
   backend "gcs" {
-    bucket = "s360-tfstate-CHANGE-ME-PROJECT-ID"
+    bucket = "s360-tfstate-project-42179253-bad9-49f0-835"
     prefix = "terraform-core"
   }
 }
