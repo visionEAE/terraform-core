@@ -12,6 +12,7 @@ locals {
       db_disk_size_gb     = 10
       db_deletion_protect = true
       gateway_min         = 1 # cold starts annoyed: the entry point stays warm
+      internal_min        = 1 # auth/core/lms/support/network: JVM cold start (+VPC egress) tripped breakers and stalled logins
       service_max         = 3
       relay_schedule      = "*/5 * * * *"
     }

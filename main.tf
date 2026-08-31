@@ -130,6 +130,14 @@ locals {
     # binding turns these into spring.datasource.hikari.* without touching any image.
     SPRING_DATASOURCE_HIKARI_MAXIMUMPOOLSIZE = "3"
     SPRING_DATASOURCE_HIKARI_MINIMUMIDLE     = "0"
+    # pgjdbc's default socketTimeout is 0 = infinite: a TCP connection silently dropped while the
+    # warm-but-CPU-throttled instance idled left threads blocked forever on dead sockets, wedging
+    # all 3 pool slots (observed: active=3 stuck for 20+ min, every request 500ing). socketTimeout
+    # bounds any read; maxLifetime/keepaliveTime retire and probe connections before idle infra
+    # timeouts kill them. Overrides the yml url with the same host/db, so no image change.
+    SPRING_DATASOURCE_URL                  = "jdbc:postgresql://${module.cloudsql.private_ip}:5432/${module.cloudsql.database}?socketTimeout=30&connectTimeout=10&tcpKeepAlive=true"
+    SPRING_DATASOURCE_HIKARI_MAXLIFETIME   = "540000" # 9 min, under the ~10 min idle-drop window
+    SPRING_DATASOURCE_HIKARI_KEEPALIVETIME = "300000" # probe pooled connections every 5 min
   }
 }
 
@@ -143,7 +151,7 @@ module "auth_service" {
   service_account_email = module.auth_sa.email
   container_port        = 8081
   memory                = "768Mi"
-  min_instances         = 0
+  min_instances         = local.cfg.internal_min
   max_instances         = local.cfg.service_max
   vpc_network_id        = module.network.network_id
   vpc_subnet_id         = module.network.subnet_id
@@ -213,7 +221,7 @@ module "core_service" {
   image                 = var.core_image
   service_account_email = module.core_sa.email
   container_port        = 8082
-  min_instances         = 0
+  min_instances         = local.cfg.internal_min
   max_instances         = local.cfg.service_max
   vpc_network_id        = module.network.network_id
   vpc_subnet_id         = module.network.subnet_id
@@ -242,7 +250,7 @@ module "lms_service" {
   image                 = var.lms_image
   service_account_email = module.lms_sa.email
   container_port        = 8083
-  min_instances         = 0
+  min_instances         = local.cfg.internal_min
   max_instances         = local.cfg.service_max
   vpc_network_id        = module.network.network_id
   vpc_subnet_id         = module.network.subnet_id
@@ -272,7 +280,7 @@ module "support_service" {
   service_account_email = module.support_sa.email
   container_port        = 8084
   memory                = "768Mi"
-  min_instances         = 0
+  min_instances         = local.cfg.internal_min
   max_instances         = local.cfg.service_max
   vpc_network_id        = module.network.network_id
   vpc_subnet_id         = module.network.subnet_id
@@ -304,7 +312,7 @@ module "network_service" {
   image                 = var.network_image
   service_account_email = module.network_sa.email
   container_port        = 8085
-  min_instances         = 0
+  min_instances         = local.cfg.internal_min
   max_instances         = local.cfg.service_max
   vpc_network_id        = module.network.network_id
   vpc_subnet_id         = module.network.subnet_id
