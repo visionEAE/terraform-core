@@ -45,6 +45,12 @@ resource "google_sql_database_instance" "this" {
       query_insights_enabled = true
     }
 
+    # Headroom over the shared-core default (25): 6 workloads x small pools x up to 3 instances.
+    database_flags {
+      name  = "max_connections"
+      value = "50"
+    }
+
     user_labels = var.labels
   }
 

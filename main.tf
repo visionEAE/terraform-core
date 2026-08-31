@@ -125,6 +125,11 @@ locals {
     POSTGRES_HOST = module.cloudsql.private_ip
     POSTGRES_PORT = "5432"
     POSTGRES_DB   = module.cloudsql.database
+    # db-f1-micro's max_connections is tiny and every instance of every service brings its own
+    # pool: five services x Hikari's default 10 exhausted it on the very first boot. Relaxed
+    # binding turns these into spring.datasource.hikari.* without touching any image.
+    SPRING_DATASOURCE_HIKARI_MAXIMUMPOOLSIZE = "3"
+    SPRING_DATASOURCE_HIKARI_MINIMUMIDLE     = "0"
   }
 }
 
