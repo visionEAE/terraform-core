@@ -198,7 +198,9 @@ module "gateway_service" {
     LMS_SERVICE_URL        = local.run_url["s360-lms"]
     SUPPORT_SERVICE_URL    = local.run_url["s360-support"]
     NETWORK_SERVICE_URL    = local.run_url["s360-network"]
-    FRONTEND_ORIGIN        = local.run_url["s360-web"]
+    # ALL of the web service's hostnames: Cloud Run answers on both the legacy and the
+    # deterministic form, and whichever the browser is on is the Origin CORS must accept.
+    FRONTEND_ORIGIN = join(",", module.web_service.urls)
   }
 }
 
