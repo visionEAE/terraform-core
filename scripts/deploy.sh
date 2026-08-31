@@ -49,7 +49,7 @@ for svc in "${targets[@]}"; do
 
   if [ "${MODE}" != "roll" ]; then
     echo "── ${svc}: building ${repo}"
-    mvn -q -f "${dir}/pom.xml" -DskipTests package
+    mvn -q -f "${dir}/pom.xml" -DskipTests clean package
     docker build -q -t "${image}:${tag}" -t "${image}:latest" "${dir}"
     docker push -q "${image}:${tag}"
     docker push -q "${image}:latest"
