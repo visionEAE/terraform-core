@@ -11,7 +11,7 @@ locals {
       db_tier             = "db-f1-micro" # shared-core; the whole demo fits and the trial budget matters
       db_disk_size_gb     = 10
       db_deletion_protect = true
-      gateway_min         = 0 # bump to 1 later if cold starts annoy
+      gateway_min         = 1 # cold starts annoyed: the entry point stays warm
       service_max         = 3
       relay_schedule      = "*/5 * * * *"
     }
